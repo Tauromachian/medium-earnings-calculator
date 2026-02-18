@@ -1,5 +1,5 @@
 ---
-
+import MethodologyCard from "../components/MethodologyCard.astro";
 ---
 
 <html lang="en">
@@ -9,9 +9,894 @@
     <link rel="icon" href="/favicon.ico" />
     <meta name="viewport" content="width=device-width" />
     <meta name="generator" content={Astro.generator} />
+    <title>Medium Earnings Calculator</title>
+
     <title>Astro</title>
+
+    <link
+      href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=DM+Mono:wght@300;400;500&family=DM+Sans:wght@300;400;500&display=swap"
+      rel="stylesheet"
+    />
+
+    <style is:global>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      :root {
+        --ink: #1a1410;
+        --paper: #f5f0e8;
+        --cream: #ede6d6;
+        --accent: #c8472a;
+        --accent2: #2a6e4e;
+        --muted: #7a6e5f;
+        --rule: #c4b89a;
+        --highlight: #f7e87c;
+      }
+
+      body {
+        background: var(--paper);
+        color: var(--ink);
+        font-family: "DM Sans", sans-serif;
+        min-height: 100vh;
+        position: relative;
+        overflow-x: hidden;
+      }
+
+      /* Newspaper texture overlay */
+      body::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+        pointer-events: none;
+        z-index: 100;
+      }
+
+      .masthead {
+        border-bottom: 3px double var(--rule);
+        padding: 1.5rem 2rem 1rem;
+        text-align: center;
+        position: relative;
+      }
+
+      .masthead::before {
+        content: "— EST. BY WRITERS, FOR WRITERS —";
+        display: block;
+        font-family: "DM Mono", monospace;
+        font-size: 0.6rem;
+        letter-spacing: 0.25em;
+        color: var(--muted);
+        margin-bottom: 0.75rem;
+        text-transform: uppercase;
+      }
+
+      .masthead h1 {
+        font-family: "Playfair Display", serif;
+        font-size: clamp(2.5rem, 7vw, 5rem);
+        font-weight: 900;
+        line-height: 0.9;
+        letter-spacing: -0.02em;
+      }
+
+      .masthead h1 span {
+        display: block;
+        font-style: italic;
+        font-weight: 400;
+        font-size: 0.45em;
+        color: var(--accent);
+        letter-spacing: 0.05em;
+        margin-top: 0.3em;
+      }
+
+      .dateline {
+        font-family: "DM Mono", monospace;
+        font-size: 0.65rem;
+        color: var(--muted);
+        letter-spacing: 0.1em;
+        margin-top: 0.75rem;
+        border-top: 1px solid var(--rule);
+        padding-top: 0.5rem;
+        text-transform: uppercase;
+      }
+
+      .layout {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0;
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 2rem;
+        gap: 3rem;
+      }
+
+      @media (max-width: 768px) {
+        .layout {
+          grid-template-columns: 1fr;
+          padding: 1rem;
+          gap: 2rem;
+        }
+      }
+
+      /* SECTION LABELS */
+      .section-label {
+        font-family: "DM Mono", monospace;
+        font-size: 0.6rem;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: var(--accent);
+        border-bottom: 2px solid var(--accent);
+        padding-bottom: 0.25rem;
+        margin-bottom: 1.25rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .section-label::before {
+        content: "§";
+        font-size: 0.8rem;
+      }
+
+      /* ARTICLE CARD INPUTS */
+      .article-list {
+        display: flex;
+        flex-direction: column;
+        gap: 0;
+      }
+
+      .article-row {
+        display: grid;
+        grid-template-columns: 1fr 80px 90px 32px;
+        gap: 0.5rem;
+        align-items: center;
+        padding: 0.6rem 0;
+        border-bottom: 1px solid var(--rule);
+        animation: slideIn 0.3s ease both;
+      }
+
+      @keyframes slideIn {
+        from {
+          opacity: 0;
+          transform: translateY(-8px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .article-row:first-child {
+        border-top: 1px solid var(--rule);
+      }
+
+      .col-header {
+        font-family: "DM Mono", monospace;
+        font-size: 0.58rem;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--muted);
+        padding: 0.3rem 0 0.5rem;
+        display: grid;
+        grid-template-columns: 1fr 80px 90px 32px;
+        gap: 0.5rem;
+        border-bottom: 2px solid var(--ink);
+        margin-bottom: 0;
+      }
+
+      input[type="text"],
+      input[type="number"] {
+        background: transparent;
+        border: none;
+        border-bottom: 1.5px solid var(--rule);
+        padding: 0.25rem 0.1rem;
+        font-family: "DM Sans", sans-serif;
+        font-size: 0.82rem;
+        color: var(--ink);
+        width: 100%;
+        transition: border-color 0.2s;
+        outline: none;
+      }
+
+      input[type="text"]:focus,
+      input[type="number"]:focus {
+        border-bottom-color: var(--accent);
+      }
+
+      input[type="number"] {
+        text-align: right;
+        font-family: "DM Mono", monospace;
+      }
+
+      .btn-remove {
+        background: none;
+        border: 1px solid var(--rule);
+        color: var(--muted);
+        width: 24px;
+        height: 24px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        font-size: 0.9rem;
+        line-height: 1;
+        transition: all 0.15s;
+        border-radius: 2px;
+        justify-self: center;
+      }
+
+      .btn-remove:hover {
+        background: var(--accent);
+        color: white;
+        border-color: var(--accent);
+      }
+
+      .btn-add {
+        margin-top: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        background: none;
+        border: 1.5px dashed var(--rule);
+        color: var(--muted);
+        padding: 0.5rem 1rem;
+        font-family: "DM Mono", monospace;
+        font-size: 0.7rem;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        cursor: pointer;
+        transition: all 0.2s;
+        width: 100%;
+        justify-content: center;
+      }
+
+      .btn-add:hover {
+        border-color: var(--accent2);
+        color: var(--accent2);
+        background: rgba(42, 110, 78, 0.05);
+      }
+
+      /* GLOBAL SETTINGS */
+      .settings-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem 1.5rem;
+      }
+
+      .field-group {
+        display: flex;
+        flex-direction: column;
+        gap: 0.4rem;
+      }
+      .field-group label {
+        font-family: "DM Mono", monospace;
+        font-size: 0.6rem;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--muted);
+      }
+
+      .field-group .input-wrap {
+        display: flex;
+        align-items: center;
+        border-bottom: 1.5px solid var(--rule);
+        gap: 0.25rem;
+      }
+
+      .field-group .input-wrap span {
+        font-family: "DM Mono", monospace;
+        font-size: 0.75rem;
+        color: var(--muted);
+      }
+
+      .field-group input {
+        border: none;
+        border-bottom: none;
+        flex: 1;
+      }
+
+      select {
+        background: transparent;
+        border: none;
+        border-bottom: 1.5px solid var(--rule);
+        padding: 0.25rem 0;
+        font-family: "DM Sans", sans-serif;
+        font-size: 0.82rem;
+        color: var(--ink);
+        width: 100%;
+        outline: none;
+        cursor: pointer;
+        appearance: none;
+        -webkit-appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%237a6e5f'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 0.25rem center;
+        padding-right: 1.25rem;
+      }
+
+      /* RESULTS PANEL */
+      .results-panel {
+        background: var(--ink);
+        color: var(--paper);
+        padding: 2rem;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .results-panel::before {
+        content: "";
+        position: absolute;
+        top: -2rem;
+        right: -2rem;
+        width: 120px;
+        height: 120px;
+        border: 2px solid rgba(255, 255, 255, 0.05);
+        border-radius: 50%;
+      }
+
+      .results-panel::after {
+        content: "";
+        position: absolute;
+        bottom: -3rem;
+        left: -3rem;
+        width: 180px;
+        height: 180px;
+        border: 2px solid rgba(255, 255, 255, 0.04);
+        border-radius: 50%;
+      }
+
+      .results-panel .section-label {
+        color: #f7e87c;
+        border-color: #f7e87c;
+      }
+
+      .big-number {
+        font-family: "Playfair Display", serif;
+        font-size: clamp(3rem, 6vw, 4.5rem);
+        font-weight: 900;
+        line-height: 1;
+        color: var(--highlight);
+        margin: 0.5rem 0;
+        letter-spacing: -0.03em;
+        transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+      }
+
+      .big-label {
+        font-family: "DM Mono", monospace;
+        font-size: 0.65rem;
+        letter-spacing: 0.15em;
+        text-transform: uppercase;
+        color: rgba(245, 240, 232, 0.5);
+        margin-bottom: 0.2rem;
+      }
+
+      .result-breakdown {
+        margin-top: 1.5rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0;
+      }
+
+      .result-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        padding: 0.55rem 0;
+        border-bottom: 1px solid rgba(245, 240, 232, 0.1);
+        font-size: 0.82rem;
+      }
+
+      .result-row:last-child {
+        border-bottom: none;
+      }
+
+      .result-row .rname {
+        color: rgba(245, 240, 232, 0.7);
+        font-size: 0.78rem;
+        max-width: 60%;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .result-row .rval {
+        font-family: "DM Mono", monospace;
+        font-size: 0.85rem;
+        color: var(--paper);
+        font-weight: 500;
+      }
+
+      .result-row.total {
+        border-top: 1px solid rgba(245, 240, 232, 0.3);
+        margin-top: 0.5rem;
+        padding-top: 0.75rem;
+        border-bottom: none;
+      }
+
+      .result-row.total .rname {
+        color: var(--highlight);
+        font-weight: 500;
+      }
+      .result-row.total .rval {
+        color: var(--highlight);
+        font-size: 1rem;
+      }
+
+      /* RANGE BAND */
+      .range-band {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-top: 1.5rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid rgba(245, 240, 232, 0.1);
+        font-size: 0.75rem;
+      }
+
+      .range-band .rb-label {
+        font-family: "DM Mono", monospace;
+        font-size: 0.58rem;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: rgba(245, 240, 232, 0.4);
+        white-space: nowrap;
+      }
+
+      .range-bar {
+        flex: 1;
+        height: 4px;
+        background: rgba(245, 240, 232, 0.1);
+        border-radius: 2px;
+        position: relative;
+        overflow: visible;
+      }
+
+      .range-fill {
+        position: absolute;
+        left: 0;
+        top: 0;
+        height: 100%;
+        background: linear-gradient(
+          90deg,
+          rgba(200, 71, 42, 0.6),
+          var(--highlight)
+        );
+        border-radius: 2px;
+        transition: width 0.5s ease;
+        width: 50%;
+      }
+
+      .range-dot {
+        position: absolute;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        width: 10px;
+        height: 10px;
+        background: var(--highlight);
+        border-radius: 50%;
+        box-shadow:
+          0 0 0 2px var(--ink),
+          0 0 0 4px var(--highlight);
+        transition: left 0.5s ease;
+      }
+
+      .range-val {
+        font-family: "DM Mono", monospace;
+        font-size: 0.72rem;
+        color: rgba(245, 240, 232, 0.6);
+      }
+
+      /* TIER BADGE */
+      .tier-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        margin-top: 1rem;
+        padding: 0.3rem 0.75rem;
+        font-family: "DM Mono", monospace;
+        font-size: 0.65rem;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        border: 1px solid;
+        transition: all 0.4s;
+      }
+
+      .tier-emerging {
+        color: #64b5f6;
+        border-color: #64b5f6;
+        background: rgba(100, 181, 246, 0.08);
+      }
+      .tier-growing {
+        color: #81c784;
+        border-color: #81c784;
+        background: rgba(129, 199, 132, 0.08);
+      }
+      .tier-established {
+        color: var(--highlight);
+        border-color: var(--highlight);
+        background: rgba(247, 232, 124, 0.08);
+      }
+      .tier-top {
+        color: #ffb74d;
+        border-color: #ffb74d;
+        background: rgba(255, 183, 77, 0.08);
+      }
+
+      .monthly-toggle {
+        display: flex;
+        gap: 0;
+        border: 1px solid var(--rule);
+        overflow: hidden;
+        width: fit-content;
+        margin-bottom: 1.5rem;
+      }
+
+      .monthly-toggle button {
+        background: none;
+        border: none;
+        padding: 0.4rem 0.9rem;
+        font-family: "DM Mono", monospace;
+        font-size: 0.65rem;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        cursor: pointer;
+        color: var(--muted);
+        transition: all 0.15s;
+      }
+
+      .monthly-toggle button.active {
+        background: var(--ink);
+        color: var(--paper);
+      }
+
+      .pulse {
+        animation: pulse 0.4s ease;
+      }
+
+      @keyframes pulse {
+        0% {
+          transform: scale(1);
+        }
+        50% {
+          transform: scale(1.04);
+        }
+        100% {
+          transform: scale(1);
+        }
+      }
+    </style>
   </head>
   <body>
-    <h1>Astro</h1>
+    <header class="masthead">
+      <h1>
+        The Earnings Ledger<span>A Medium Writer's Financial Calculator</span>
+      </h1>
+      <div class="dateline" id="dateline"></div>
+    </header>
+
+    <div class="layout">
+      <!-- LEFT: INPUTS -->
+      <div>
+        <div class="section-label">Your Articles</div>
+
+        <div class="col-header">
+          <span>Title</span>
+          <span style="text-align: right">Read Min</span>
+          <span style="text-align: right">Members</span>
+          <span></span>
+        </div>
+        <div class="article-list" id="articleList"></div>
+        <button class="btn-add" onclick="addArticle()">+ Add Article</button>
+
+        <div style="height: 2rem"></div>
+
+        <div class="section-label">Account Settings</div>
+        <div class="settings-grid">
+          <div class="field-group">
+            <label>Follower Count</label>
+            <div class="input-wrap">
+              <input
+                type="number"
+                id="followers"
+                value="500"
+                min="0"
+                oninput="calculate()"
+              />
+            </div>
+          </div>
+          <div class="field-group">
+            <label>Member Ratio</label>
+            <div class="input-wrap">
+              <input
+                type="number"
+                id="memberRatio"
+                value="60"
+                min="0"
+                max="100"
+                oninput="calculate()"
+              />
+              <span>%</span>
+            </div>
+          </div>
+          <div class="field-group">
+            <label>Avg Read Time (min)</label>
+            <div class="input-wrap">
+              <input
+                type="number"
+                id="avgReadTime"
+                value="4"
+                min="1"
+                oninput="calculate()"
+              />
+            </div>
+          </div>
+          <div class="field-group">
+            <label>Bonus Rate (boost)</label>
+            <div class="input-wrap">
+              <input
+                type="number"
+                id="bonusRate"
+                value="1.0"
+                min="0.5"
+                max="3"
+                step="0.1"
+                oninput="calculate()"
+              />
+              <span>×</span>
+            </div>
+          </div>
+        </div>
+
+        <div style="height: 1.5rem"></div>
+        <div class="section-label">Timeframe</div>
+        <div class="monthly-toggle">
+          <button
+            id="btn-monthly"
+            class="active"
+            onclick="setTimeframe('monthly')"
+          >
+            Monthly
+          </button>
+          <button id="btn-annual" onclick="setTimeframe('annual')">
+            Annual
+          </button>
+        </div>
+      </div>
+
+      <!-- RIGHT: RESULTS -->
+      <div class="results-panel">
+        <div class="section-label">Projected Earnings</div>
+
+        <div class="big-label" id="earningsLabel">ESTIMATED MONTHLY</div>
+        <div class="big-number" id="bigNumber">$0.00</div>
+        <div id="tierBadge" class="tier-badge tier-emerging">
+          ◎ Emerging Writer
+        </div>
+
+        <div class="result-breakdown" id="breakdown"></div>
+
+        <div class="range-band">
+          <span class="rb-label">Low</span>
+          <div class="range-bar">
+            <div class="range-fill" id="rangeFill"></div>
+            <div class="range-dot" id="rangeDot"></div>
+          </div>
+          <span class="rb-label">High</span>
+        </div>
+        <div
+          style="display: flex; justify-content: space-between; margin-top: 0.4rem"
+        >
+          <span class="range-val" id="rangeMin">$0</span>
+          <span class="range-val" id="rangeMax">$0</span>
+        </div>
+      </div>
+
+      <MethodologyCard />
+
+      <script lang="js">
+        // State
+        let articles = [];
+        let timeframe = "monthly";
+        let articleId = 0;
+
+        const BASE_RATE = 0.025; // $ per member read-minute
+        const FOLLOWER_BOOST_PER_1K = 0.012; // 1.2% boost per 1k followers (diminishing)
+
+        // Init with sample articles
+        function init() {
+          document.getElementById("dateline").textContent =
+            `Vol. 2025 · Issue 01 · ${new Date().toLocaleDateString("en-US", {
+              month: "long",
+              day: "numeric",
+              year: "numeric",
+            })}`;
+          addArticle("How I Built My Newsletter to 5K", 6, 420);
+          addArticle("10 Productivity Tools I Actually Use", 4, 280);
+          addArticle("The Honest Truth About Writing Online", 5, 190);
+          calculate();
+        }
+
+        function addArticle(title = "", readMin = 4, members = 0) {
+          const id = ++articleId;
+          articles.push({
+            id,
+            title,
+            readMin: readMin || 4,
+            members: members || 0,
+          });
+          renderArticles();
+          calculate();
+        }
+
+        function removeArticle(id) {
+          articles = articles.filter((a) => a.id !== id);
+          renderArticles();
+          calculate();
+        }
+
+        function renderArticles() {
+          const list = document.getElementById("articleList");
+          list.innerHTML = "";
+          articles.forEach((art, i) => {
+            const row = document.createElement("div");
+            row.className = "article-row";
+            row.style.animationDelay = `${i * 0.04}s`;
+            row.innerHTML = `
+        <input type="text" placeholder="Article title…" value="${art.title}" 
+          oninput="updateArticle(${art.id}, 'title', this.value)">
+        <input type="number" min="1" value="${art.readMin}" 
+          oninput="updateArticle(${art.id}, 'readMin', +this.value); calculate()" style="text-align:right">
+        <input type="number" min="0" value="${art.members}" 
+          oninput="updateArticle(${art.id}, 'members', +this.value); calculate()" style="text-align:right">
+        <button class="btn-remove" onclick="removeArticle(${art.id})" title="Remove">×</button>
+      `;
+            list.appendChild(row);
+          });
+        }
+
+        function updateArticle(id, field, val) {
+          const art = articles.find((a) => a.id === id);
+          if (art) art[field] = val;
+        }
+
+        function setTimeframe(tf) {
+          timeframe = tf;
+          document
+            .getElementById("btn-monthly")
+            .classList.toggle("active", tf === "monthly");
+          document
+            .getElementById("btn-annual")
+            .classList.toggle("active", tf === "annual");
+          calculate();
+        }
+
+        function followerMultiplier(followers) {
+          // Diminishing returns: log scale
+          if (followers <= 0) return 1;
+          return 1 + Math.log10(Math.max(1, followers)) * 0.08;
+        }
+
+        function readDepthMultiplier(readMin) {
+          // Sweet spot 3-6 min; penalty for very short or very long
+          if (readMin <= 0) return 0;
+          if (readMin <= 2) return 0.5;
+          if (readMin <= 3) return 0.8;
+          if (readMin <= 6) return 1.0;
+          if (readMin <= 10) return 0.9;
+          return 0.75; // Very long articles lose readers
+        }
+
+        function calculate() {
+          const followers = +document.getElementById("followers").value || 0;
+          const memberRatioPct =
+            +document.getElementById("memberRatio").value || 60;
+          const bonusRate = +document.getElementById("bonusRate").value || 1.0;
+          const memberRatio = memberRatioPct / 100;
+
+          const followerMult = followerMultiplier(followers);
+
+          let breakdown = [];
+          let total = 0;
+
+          articles.forEach((art) => {
+            if (!art.members || art.members <= 0) return;
+            const memberReads = art.members * memberRatio;
+            const readMin = art.readMin || 4;
+            const depthMult = readDepthMultiplier(readMin);
+            const earning =
+              memberReads *
+              readMin *
+              BASE_RATE *
+              depthMult *
+              followerMult *
+              bonusRate;
+            breakdown.push({ name: art.title || "Untitled", earning });
+            total += earning;
+          });
+
+          const multiplier = timeframe === "annual" ? 12 : 1;
+          const displayTotal = total * multiplier;
+
+          // Range: ±40%
+          const low = displayTotal * 0.6;
+          const high = displayTotal * 1.4;
+
+          // Update big number
+          const bigEl = document.getElementById("bigNumber");
+          bigEl.textContent = fmt(displayTotal);
+          bigEl.classList.remove("pulse");
+          void bigEl.offsetWidth;
+          bigEl.classList.add("pulse");
+
+          document.getElementById("earningsLabel").textContent =
+            timeframe === "annual" ? "ESTIMATED ANNUAL" : "ESTIMATED MONTHLY";
+
+          // Breakdown list
+          const bkEl = document.getElementById("breakdown");
+          bkEl.innerHTML = "";
+
+          breakdown
+            .sort((a, b) => b.earning - a.earning)
+            .forEach((item) => {
+              const row = document.createElement("div");
+              row.className = "result-row";
+              row.innerHTML = `<span class="rname">${
+                item.name || "Untitled"
+              }</span><span class="rval">${fmt(
+                item.earning * multiplier,
+              )}</span>`;
+              bkEl.appendChild(row);
+            });
+
+          if (breakdown.length > 0) {
+            const totalRow = document.createElement("div");
+            totalRow.className = "result-row total";
+            totalRow.innerHTML = `<span class="rname">Total Estimated</span><span class="rval">${fmt(
+              displayTotal,
+            )}</span>`;
+            bkEl.appendChild(totalRow);
+          }
+
+          // Range
+          document.getElementById("rangeMin").textContent = fmt(low);
+          document.getElementById("rangeMax").textContent = fmt(high);
+          const pct = Math.min(90, Math.max(10, 50));
+          document.getElementById("rangeFill").style.width = pct + "%";
+          document.getElementById("rangeDot").style.left = pct + "%";
+
+          // Tier
+          const monthly = total;
+          let tier, tierClass;
+          if (monthly < 10) {
+            tier = "◎ Emerging Writer";
+            tierClass = "tier-emerging";
+          } else if (monthly < 100) {
+            tier = "▲ Growing Writer";
+            tierClass = "tier-growing";
+          } else if (monthly < 500) {
+            tier = "★ Established Writer";
+            tierClass = "tier-established";
+          } else {
+            tier = "◆ Top Earner";
+            tierClass = "tier-top";
+          }
+
+          const badge = document.getElementById("tierBadge");
+          badge.textContent = tier;
+          badge.className = `tier-badge ${tierClass}`;
+        }
+
+        function fmt(n) {
+          if (n >= 1000) return "$" + (n / 1000).toFixed(1) + "K";
+          return "$" + n.toFixed(2);
+        }
+
+        init();
+      </script>
+    </div>
   </body>
 </html>
